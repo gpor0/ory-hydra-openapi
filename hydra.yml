@@ -1,0 +1,345 @@
+openapi: 3.0.2
+info:
+  title: Hydra Admin interface
+  version: 1.6.0
+servers:
+  - url: /oauth2
+paths:
+  /auth/requests/login:
+    get:
+      tags:
+        - oauth2
+      summary: Get login request
+      description: https://www.ory.sh/hydra/docs/reference/api#get-a-login-request
+      operationId: getLoginRequest
+      parameters:
+        - name: login_challenge
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: LoginRequest
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/LoginRequest"
+  /revoke:
+    post:
+      tags:
+        - oauth2
+      summary: Revoke token
+      description: https://www.ory.sh/hydra/docs/reference/api#revoke-oauth2-tokens
+      operationId: revokeToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/RevokeTokenRequest"
+      responses:
+        '200':
+          description: Success
+  /auth/requests/login/accept:
+    put:
+      tags:
+        - oauth2
+      summary: Accept login
+      description: https://www.ory.sh/hydra/docs/reference/api#accept-a-login-request
+      operationId: acceptLogin
+      parameters:
+        - name: login_challenge
+          in: query
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/AcceptLoginRequest"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CompletedRequest"
+  /auth/requests/login/reject:
+    put:
+      tags:
+        - oauth2
+      summary: Reject login
+      description: https://www.ory.sh/hydra/docs/reference/api#reject-a-login-request
+      operationId: rejectLogin
+      parameters:
+        - name: login_challenge
+          in: query
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/RejectLoginRequest"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CompletedRequest"
+  /auth/requests/consent:
+    get:
+      tags:
+        - oauth2
+      summary: Get consent request info
+      description: https://www.ory.sh/hydra/docs/reference/api#get-consent-request-information
+      operationId: getConsentRequestInfo
+      parameters:
+        - name: consent_challenge
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ConsentRequest"
+  /auth/requests/consent/accept:
+    put:
+      tags:
+        - oauth2
+      summary: Get consent request info
+      description: https://www.ory.sh/hydra/docs/reference/api#get-consent-request-information
+      operationId: acceptConsentRequestInfo
+      parameters:
+        - name: consent_challenge
+          in: query
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/AcceptConsentRequest"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ConsentRequest"
+components:
+  schemas:
+    AcceptConsentRequest:
+      properties:
+        grant_scope:
+          type: string
+        session:
+          type: object
+          properties:
+            grant_scope:
+              type: string
+            session:
+              type: object
+              properties:
+                access_token:
+                  type: object
+                  additionalProperties:
+                    type: string
+                id_token:
+                  type: object
+                  additionalProperties:
+                    type: string
+    CompletedRequest:
+      properties:
+        redirect_to:
+          type: string
+    RejectLoginRequest:
+      properties:
+        error:
+          type: string
+        error_debug:
+          type: string
+        error_description:
+          type: string
+        error_hint:
+          type: string
+        status_code:
+          type: integer
+          format: int32
+    AcceptLoginRequest:
+      properties:
+        acr:
+          type: string
+        context:
+          type: object
+        force_subject_identifier:
+          type: string
+        remember:
+          type: boolean
+        remember_for:
+          type: integer
+          format: int64
+        subject:
+          type: string
+    RevokeTokenRequest:
+      properties:
+        token:
+          type: string
+    Client:
+      properties:
+        allowed_cors_origins:
+          type: array
+          items:
+            type: string
+        audience:
+          type: array
+          items:
+            type: string
+        backchannel_logout_session_required:
+          type: boolean
+        backchannel_logout_uri:
+          type: string
+        client_id:
+          type: string
+        client_name:
+          type: string
+        client_secret:
+          type: string
+        client_secret_expires_at:
+          type: integer
+        client_uri:
+          type: string
+        contacts:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+        frontchannel_logout_session_required:
+          type: boolean
+        frontchannel_logout_uri:
+          type: string
+        grant_types:
+          type: array
+          items:
+            type: string
+        jwks:
+          type: object
+        jwks_uri:
+          type: string
+        logo_uri:
+          type: string
+        metadata:
+          type: object
+        owner:
+          type: string
+        policy_uri:
+          type: string
+        post_logout_redirect_uris:
+          type: array
+          items:
+            type: string
+        redirect_uris:
+          type: array
+          items:
+            type: string
+        request_object_signing_alg:
+          type: string
+        request_uris:
+          type: array
+          items:
+            type: string
+        response_types:
+          type: array
+          items:
+            type: string
+        scope:
+          type: string
+        sector_identifier_uri:
+          type: string
+        subject_type:
+          type: string
+        token_endpoint_auth_method:
+          type: string
+        token_endpoint_auth_signing_alg:
+          type: string
+        tos_uri:
+          type: string
+        updated_at:
+          type: string
+        userinfo_signed_response_alg:
+          type: string
+    OIDCRequest:
+      properties:
+        acr_values:
+          type: array
+          items:
+            type: string
+        display:
+          type: string
+        id_token_hint_claims:
+          type: object
+        login_hint:
+          type: string
+        ui_locales:
+          type: array
+          items:
+            type: string
+    LoginRequest:
+      properties:
+        challenge:
+          type: string
+        client:
+          "$ref": "#/components/schemas/Client"
+        oidc_context:
+          "$ref": "#/components/schemas/OIDCRequest"
+        request_url:
+          type: string
+        requested_access_token_audience:
+          type: array
+          items:
+            type: string
+        requested_scope:
+          type: array
+          items:
+            type: string
+        session_id:
+          type: string
+        skip:
+          type: boolean
+        subject:
+          type: string
+    ConsentRequest:
+      properties:
+        acr:
+          type: string
+        challenge:
+          type: string
+        client:
+          "$ref": "#/components/schemas/Client"
+        context:
+          type: object
+        login_challenge:
+          type: string
+        login_session_id:
+          type: string
+        oidc_context:
+          "$ref": "#/components/schemas/OIDCRequest"
+        request_url:
+          type: string
+        requested_access_token_audience:
+          type: array
+          items:
+            type: string
+        requested_scope:
+          type: array
+          items:
+            type: string
+        skip:
+          type: boolean
+        subject:
+          type: string
+
