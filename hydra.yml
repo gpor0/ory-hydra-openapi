@@ -79,7 +79,7 @@ paths:
         content:
           application/json:
             schema:
-              "$ref": "#/components/schemas/RejectLoginRequest"
+              "$ref": "#/components/schemas/ErrorInfoRequest"
       responses:
         '200':
           description: Success
@@ -110,7 +110,7 @@ paths:
     put:
       tags:
         - oauth2
-      summary: Get consent request info
+      summary: Accept consent request info
       description: https://www.ory.sh/hydra/docs/reference/api#get-consent-request-information
       operationId: acceptConsentRequestInfo
       parameters:
@@ -129,34 +129,118 @@ paths:
           content:
             application/json:
               schema:
-                "$ref": "#/components/schemas/ConsentRequest"
+                "$ref": "#/components/schemas/CompletedRequest"
+  /auth/requests/consent/reject:
+    put:
+      tags:
+        - oauth2
+      summary: Reject consent request info
+      description: https://www.ory.sh/hydra/docs/reference/api#reject-a-consent-request
+      operationId: rejectConsentRequestInfo
+      parameters:
+        - name: consent_challenge
+          in: query
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/ErrorInfoRequest"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CompletedRequest"
+  /auth/sessions/login:
+    delete:
+      tags:
+        - oauth2
+      summary: Invalidate user login sessions
+      description: https://www.ory.sh/hydra/docs/reference/api#invalidates-all-login-sessions-of-a-certain-user
+      operationId: invalidateUserLoginSessions
+      parameters:
+        - name: subject
+          in: query
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Success
+  /flush:
+    post:
+      tags:
+        - oauth2
+      summary: Flush expired Oauth2 Access Tokens
+      description: https://www.ory.sh/hydra/docs/reference/api#flush-expired-oauth2-access-tokens
+      operationId: flushExpiredAccessTokens
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/FlushAccessTokensRequest"
+      responses:
+        '204':
+          description: Success
+  /version:
+    get:
+      tags:
+        - oauth2
+      summary: Get service version
+      description: https://www.ory.sh/hydra/docs/reference/api#get-service-version
+      operationId: getServiceVersion
+      responses:
+        '204':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+
 components:
   schemas:
+    FlushAccessTokensRequest:
+      properties:
+        notAfter:
+          type: string
     AcceptConsentRequest:
       properties:
+        grant_access_token_audience:
+          type: array
+          items:
+            type: string
         grant_scope:
+          type: array
+          items:
+            type: string
+        handled_at:
           type: string
+        remember:
+          type: boolean
+        remember_for:
+          type: integer
+          format: int64
         session:
           type: object
           properties:
-            grant_scope:
-              type: string
-            session:
+            access_token:
               type: object
-              properties:
-                access_token:
-                  type: object
-                  additionalProperties:
-                    type: string
-                id_token:
-                  type: object
-                  additionalProperties:
-                    type: string
+              additionalProperties:
+                type: object
+            id_token:
+              type: object
+              additionalProperties:
+                type: object
     CompletedRequest:
       properties:
         redirect_to:
           type: string
-    RejectLoginRequest:
+    ErrorInfoRequest:
       properties:
         error:
           type: string
@@ -342,4 +426,3 @@ components:
           type: boolean
         subject:
           type: string
-
